@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Заявка #{{.Trip.ID}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="home-link">
+            <h1>Tesla Charge Calculator</h1>
+        </a>
+        
+        {{if .HasDraft}}
+        <div class="cart-icon" onclick="window.location.href='/trip/{{.Trip.ID}}'" style="position: absolute; right: 20px;">
+            <span class="cart-count">{{.CartCount}}</span>
+            <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
+        </div>
+        {{else}}
+        <div class="cart-icon" style="opacity: 0.5; position: absolute; right: 20px;">
+            <span class="cart-count">0</span>
+            <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
+        </div>
+        {{end}}
+    </div>
+
+    <div class="trip-detail">
+        <div class="trip-info">
+            <div>
+                <label>Начальный заряд (кВт·ч):</label>
+                <input type="number" value="{{.Trip.StartCharge}}" disabled>
+            </div>
+            <div>
+                <label>Остаток заряда:</label>
+                <input type="text" value="{{if .RemainingCharge}}{{printf "%.2f" .RemainingCharge}} кВт·ч{{else}}Не рассчитан{{end}}" disabled>
+            </div>
+            <div>
+                <form method="POST" action="/trip/{{.Trip.ID}}/delete">
+                    <button type="submit" class="delete-button">Удалить заявку</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="scenarios-list">
+            {{range .TripScenarios}}
+            <div class="scenario-container">
+                <div class="scenario-in-trip">
+                    <img src="{{.DrivingScenario.ImageURL}}" alt="{{.DrivingScenario.Name}}">
+                    <div class="scenario-details">
+                        <h3>{{.DrivingScenario.Name}}</h3>
+                        <div class="scenario-parameters">
+                            <span class="scenario-parameter">Скорость: {{.DrivingScenario.Speed}} км/ч</span>
+                            <span class="scenario-parameter">Аэродинамика: {{.DrivingScenario.AeroCoeff}}</span>
+                            <span class="scenario-parameter">Качение: {{.DrivingScenario.RollingCoeff}}</span>
+                            <span class="scenario-parameter">Потребление: {{.DrivingScenario.SystemConsuption}} кВт</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="scenario-side">
+                    <div class="scenario-side-row">
+                        {{if eq .DrivingScenario.Type "дорога"}}
+                        <span class="scenario-side-label">Расстояние (км)</span>
+                        <input type="number" value="{{.Value}}" class="calculation-purpose" disabled>
+                        {{else}}
+                        <span class="scenario-side-label">Время (ч)</span>
+                        <input type="number" value="{{.Value}}" class="calculation-purpose" disabled>
+                        {{end}}
+                    </div>
+                </div>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html>

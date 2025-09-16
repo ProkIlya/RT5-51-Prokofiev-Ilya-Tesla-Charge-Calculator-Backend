@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Scenario.Name}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="home-link">
+            <h1>Tesla Charge Calculator</h1>
+        </a>
+    </div>
+
+    <div class="scenario-detail">
+        <img src="{{.Scenario.ImageURL}}" alt="{{.Scenario.Name}}">
+        <h1>{{.Scenario.Name}}</h1>
+        <p class="description">{{.Scenario.Description}}</p>
+
+        <div class="parameters">
+            {{if eq .Scenario.Type "дорога"}}
+            <div class="parameter">
+                <span class="name">Скорость:</span>
+                <span class="value">{{.Scenario.Speed}} км/ч</span>
+                <p class="description">Средняя скорость движения.</p>
+            </div>
+            <div class="parameter">
+                <span class="name">Коэффициент аэродинамического сопротивления:</span>
+                <span class="value">{{.Scenario.AeroCoeff}}</span>
+                <p class="description">Зависит от качества дороги, наличия груза сверху или прицепа.</p>
+            </div>
+            <div class="parameter">
+                <span class="name">Коэффициент сопротивления качению:</span>
+                <span class="value">{{.Scenario.RollingCoeff}}</span>
+                <p class="description">Зависит от качества дороги. Для идеального асфальта - 0.005, для песка или грунта  - 0.3.</p>
+            </div>
+            {{else}}
+            <div class="parameter">
+                <span class="name">Мощность потребления систем:</span>
+                <span class="value">{{.Scenario.SystemConsuption}} кВт</span>
+                <p class="description">Мощность потребления заряда систем комфорта: кондиционер, обогрев и прочее.</p>
+            </div>
+            {{end}}
+        </div>
+    </div>
+</body>
+</html>

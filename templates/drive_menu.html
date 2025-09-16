@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tesla Charge Calculator</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <div class="header">
+        <a href="/" class="home-link">
+            <h1>Tesla Charge Calculator</h1>
+        </a>
+    </div>
+
+    <div class="search-and-cart">
+        <form method="GET" action="/" class="search-form">
+            <input type="text" name="search" placeholder="Поиск условий езды..." value="{{.SearchQuery}}" class="search-input">
+            <button type="submit" class="search-button">Найти</button>
+        </form>
+        
+        {{if .HasDraft}}
+        <div class="cart-icon" onclick="window.location.href='/trip/{{.CurrentTrip.ID}}'">
+            <span class="cart-count">{{.CartCount}}</span>
+            <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
+        </div>
+        {{else}}
+        <div class="cart-icon" style="opacity: 0.5;">
+            <span class="cart-count">0</span>
+            <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
+        </div>
+        {{end}}
+    </div>
+
+    <div class="scenarios-grid">
+        {{range .Scenarios}}
+        <div class="scenario-card">
+            <div class="scenario-content" onclick="window.location.href='/scenario/{{.ID}}'">
+                <img src="{{.ImageURL}}" alt="{{.Name}}">
+                <div class="scenario-card-content">
+                    <h2>{{.Name}}</h2>
+                    {{if eq .Type "дорога"}} 
+                    <div class="parameters-column">
+                        <p>Скорость: {{.Speed}} км/ч</p>
+                        <p>Аэродинамика: {{.AeroCoeff}}</p>
+                        <p>Качение: {{.RollingCoeff}}</p>
+                    </div>
+                    {{else}}
+                    <div class="parameters-column">
+                        <p>Потребление: {{.SystemConsuption}} кВт</p>
+                    </div>
+                    {{end}}
+                </div>
+            </div>
+            <div class="scenario-actions">
+                <form method="POST" action="/scenario/{{.ID}}/add" class="add-form">
+                    <input type="hidden" name="value" value="">
+                    <button type="submit" class="add-button">Добавить</button>
+                </form>
+            </div>
+        </div>
+        {{end}}
+    </div>
+</body>
+</html>
