@@ -15,9 +15,9 @@ func (h *Handler) IndexHandler(c *gin.Context) {
 	var err error
 
 	if searchQuery != "" {
-		scenarios, err = h.Repository.SearchScenarios(searchQuery)
+		scenarios, err = h.Repository.SearchScenarios(searchQuery) // ORM запрос
 	} else {
-		scenarios, err = h.Repository.GetScenarios()
+		scenarios, err = h.Repository.GetScenarios() // // ORM запрос
 	}
 
 	if err != nil {
@@ -25,7 +25,7 @@ func (h *Handler) IndexHandler(c *gin.Context) {
 		return
 	}
 
-	// Получаем заявку пользователя (пока используем ID 1 для демонстрации)
+	// Получение заявки пользователя
 	trip, err := h.Repository.GetUserDraft(1)
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
@@ -54,13 +54,12 @@ func (h *Handler) ScenarioHandler(c *gin.Context) {
 		return
 	}
 
-	scenario, err := h.Repository.GetScenarioByID(uint(id))
+	scenario, err := h.Repository.GetScenarioByID(uint(id)) // ORM запрос получения одного сценария езды
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
-	// Получаем заявку пользователя (пока используем ID 1 для демонстрации)
 	trip, err := h.Repository.GetUserDraft(1)
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
@@ -80,25 +79,25 @@ func (h *Handler) ScenarioHandler(c *gin.Context) {
 }
 
 func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
-	// Получаем ID пользователя (пока используем ID 1 для демонстрации)
+
 	userID := uint(1)
 
-	// Получаем или создаем черновик заявки
-	trip, err := h.Repository.GetUserDraft(userID)
+	// Получаю или создаю черновик заявки
+	trip, err := h.Repository.GetUserDraft(userID) // ORM запрос
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	if trip == nil {
-		trip, err = h.Repository.CreateDraft(userID)
+		trip, err = h.Repository.CreateDraft(userID) // ORM запрос
 		if err != nil {
 			h.errorHandler(c, http.StatusInternalServerError, err)
 			return
 		}
 	}
 
-	// Получаем ID сценария
+	// Получаю ID сценария
 	idStr := c.Param("id")
 	id, err := strconv.Atoi(idStr)
 	if err != nil {
@@ -106,14 +105,14 @@ func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
 		return
 	}
 
-	// Получаем сценарий для определения типа
-	scenario, err := h.Repository.GetScenarioByID(uint(id))
+	// Получаю сценарий для определения типа
+	scenario, err := h.Repository.GetScenarioByID(uint(id)) // ORM запрос
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// Устанавливаем значение по умолчанию в зависимости от типа сценария
+	// Устанавливаю значение по умолчанию в зависимости от типа сценария
 	var defaultValue float64
 	if scenario.Type == "дорога" {
 		defaultValue = 50
@@ -121,7 +120,7 @@ func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
 		defaultValue = 1
 	}
 
-	// Получаем значение из формы или используем значение по умолчанию
+	// Получаю значение из формы или используем значение по умолчанию
 	valueStr := c.PostForm("value")
 	if valueStr == "" {
 		valueStr = strconv.FormatFloat(defaultValue, 'f', -1, 64)
@@ -133,8 +132,8 @@ func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
 		return
 	}
 
-	// Добавляем сценарий в заявку
-	err = h.Repository.AddScenarioToTrip(trip.ID, uint(id), value)
+	// Добавляю сценарий в заявку
+	err = h.Repository.AddScenarioToTrip(trip.ID, uint(id), value) // ORM запрос
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return

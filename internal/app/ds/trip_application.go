@@ -15,5 +15,4 @@ type TripApplication struct {
 
 	Creator   User `gorm:"foreignKey:CreatorID"`
 	Moderator User `gorm:"foreignKey:ModeratorID"`
-	//TripScenarios []TripScenario `gorm:"foreignKey:TripApplicationID"` // Добавленная связь
 }

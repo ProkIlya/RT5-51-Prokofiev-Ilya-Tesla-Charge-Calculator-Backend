@@ -17,26 +17,26 @@ func (h *Handler) TripHandler(c *gin.Context) {
 		return
 	}
 
-	trip, err := h.Repository.GetTripByID(uint(id))
+	trip, err := h.Repository.GetTripByID(uint(id)) // ORM запрос
 	if err != nil {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
-	// Проверяем, что заявка не удалена
+	// Проверяю, что заявка не удалена
 	if trip.Status == "удалён" {
 		c.AbortWithStatus(http.StatusNotFound)
 		return
 	}
 
-	// Получаем сценарии для этой заявки
-	tripScenarios, err := h.Repository.GetTripScenarios(uint(id))
+	// Получаю сценарии для этой заявки
+	tripScenarios, err := h.Repository.GetTripScenarios(uint(id)) // ORM запрос получения заявки по id
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	// Получаем количество элементов в корзине для текущего пользователя
+	// Получаю количество услуг в корзине для текущего пользователя
 	userTrip, err := h.Repository.GetUserDraft(1) // ID 1 для демонстрации
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)

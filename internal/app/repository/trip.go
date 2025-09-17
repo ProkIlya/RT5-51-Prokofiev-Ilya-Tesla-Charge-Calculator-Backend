@@ -6,7 +6,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func (r *Repository) GetUserDraft(userID uint) (*ds.TripApplication, error) {
+func (r *Repository) GetUserDraft(userID uint) (*ds.TripApplication, error) { // Получение черновика заявки пользователя через ORM
 	var trip ds.TripApplication
 	err := r.db.Where("creator_id = ? AND status = ?", userID, "черновик").First(&trip).Error
 	if err != nil {
@@ -18,7 +18,7 @@ func (r *Repository) GetUserDraft(userID uint) (*ds.TripApplication, error) {
 	return &trip, nil
 }
 
-func (r *Repository) CreateDraft(userID uint) (*ds.TripApplication, error) {
+func (r *Repository) CreateDraft(userID uint) (*ds.TripApplication, error) { // Создание новой заявки-черновика через ORM
 	trip := ds.TripApplication{
 		Status:      "черновик",
 		CreatorID:   userID,
@@ -28,7 +28,7 @@ func (r *Repository) CreateDraft(userID uint) (*ds.TripApplication, error) {
 	return &trip, err
 }
 
-func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, value float64) error {
+func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, value float64) error { // Добавление или обновление сценария в заявке через ORM
 	// Проверяем, есть ли уже такой сценарий в заявке
 	var count int64
 	r.db.Model(&ds.TripScenario{}).
@@ -51,7 +51,7 @@ func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, value float64) e
 	return r.db.Create(&tripScenario).Error
 }
 
-func (r *Repository) GetTripByID(id uint) (*ds.TripApplication, error) {
+func (r *Repository) GetTripByID(id uint) (*ds.TripApplication, error) { // Получение заявки по ID через ORM
 	var trip ds.TripApplication
 	err := r.db.Where("id = ?", id).First(&trip).Error
 	if err != nil {
@@ -60,7 +60,7 @@ func (r *Repository) GetTripByID(id uint) (*ds.TripApplication, error) {
 	return &trip, nil
 }
 
-func (r *Repository) GetTripScenarios(tripID uint) ([]ds.TripScenario, error) {
+func (r *Repository) GetTripScenarios(tripID uint) ([]ds.TripScenario, error) { // Получение всех сценариев для конкретной заявки через ORM
 	var tripScenarios []ds.TripScenario
 	err := r.db.
 		Preload("DrivingScenario"). // Добавляем предзагрузку связанных данных
@@ -72,11 +72,11 @@ func (r *Repository) GetTripScenarios(tripID uint) ([]ds.TripScenario, error) {
 	return tripScenarios, nil
 }
 
-func (r *Repository) DeleteTrip(tripID uint) error {
+func (r *Repository) DeleteTrip(tripID uint) error { // Логическое удаление заявки через SQL-запрос
 	return r.db.Exec("UPDATE trip_applications SET status = 'удалён' WHERE id = ?", tripID).Error
 }
 
-func (r *Repository) GetTripScenariosCount(tripID uint) int64 {
+func (r *Repository) GetTripScenariosCount(tripID uint) int64 { // Получение количества сценариев езды в заявке через ORM
 	var count int64
 	r.db.Model(&ds.TripScenario{}).Where("trip_application_id = ?", tripID).Count(&count)
 	return count
