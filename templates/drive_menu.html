@@ -15,11 +15,11 @@
 
     <div class="search-and-cart">
         <form method="GET" action="/" class="search-form">
-            <input type="text" name="search" placeholder="Поиск условий езды..." value="{{.SearchQuery}}" class="search-input">
+            <input type="text" name="scenario_search" placeholder="Поиск условий езды..." value="{{.SearchQuery}}" class="search-input">
             <button type="submit" class="search-button">Найти</button>
         </form>
         
-        <div class="cart-icon" onclick="window.location.href='/trip/1'">
+        <div class="cart-icon" onclick="window.location.href='/trip/trip_1'">
             <span class="cart-count">{{len .Trip.Scenarios}}</span>
             <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
         </div>

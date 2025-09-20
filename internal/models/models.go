@@ -1,4 +1,3 @@
-// internal/models/models.go
 package models
 
 type DrivingScenarioType string
@@ -22,13 +21,14 @@ type DrivingScenario struct {
 
 type TripScenario struct {
 	Scenario *DrivingScenario `json:"scenario"`
-	Value    float64          `json:"value"` // расстояние в км для дорог, время в часах для систем
+	Value    float64          `json:"value"`
 }
 
 type TripCalculationCharge struct {
-	ID          int            `json:"id"`
-	StartCharge float64        `json:"startCharge"`
-	Scenarios   []TripScenario `json:"scenarios"`
+	ID              int            `json:"id"`
+	StartCharge     float64        `json:"startCharge"`
+	RemainingCharge float64        `json:"remainingCharge"`
+	Scenarios       []TripScenario `json:"scenarios"`
 }
 
 var DrivingScenarios = []*DrivingScenario{
@@ -91,11 +91,12 @@ var DrivingScenarios = []*DrivingScenario{
 
 var Trips = map[int]*TripCalculationCharge{
 	1: {
-		ID:          1,
-		StartCharge: 100,
+		ID:              1,
+		StartCharge:     100,
+		RemainingCharge: 92.82, // Предварительно рассчитанное значение
 		Scenarios: []TripScenario{
-			{Scenario: DrivingScenarios[0], Value: 50}, // 50 км по городу
-			{Scenario: DrivingScenarios[1], Value: 2},  // 2 часа кондиционера
+			{Scenario: DrivingScenarios[0], Value: 50},
+			{Scenario: DrivingScenarios[1], Value: 2},
 		},
 	},
 }

@@ -33,7 +33,7 @@ func StartServer() {
 
 	router.GET("/", h.IndexHandler)
 	router.GET("/scenario/:id", h.ScenarioHandler)
-	router.GET("/trip/:id", h.TripHandler)
+	router.GET("/trip/trip_:id", h.TripHandler)
 
 	router.Run(":8080")
 }

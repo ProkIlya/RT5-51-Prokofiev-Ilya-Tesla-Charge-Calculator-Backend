@@ -23,7 +23,7 @@ func NewHandler(r *repository.Repository) *Handler {
 }
 
 func (h *Handler) IndexHandler(c *gin.Context) {
-	searchQuery := c.Query("search")
+	searchQuery := c.Query("scenario_search")
 	scenarios := h.Repository.GetScenarios()
 	var filteredScenarios []*models.DrivingScenario
 
