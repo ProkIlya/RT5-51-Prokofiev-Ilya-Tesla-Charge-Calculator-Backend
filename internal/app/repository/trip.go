@@ -28,7 +28,7 @@ func (r *Repository) CreateDraft(userID uint) (*ds.TripApplication, error) { // 
 	return &trip, err
 }
 
-func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, value float64) error { // Добавление или обновление сценария в заявке через ORM
+func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, duration float64) error { // Добавление или обновление сценария в заявке через ORM
 	// Проверяем, есть ли уже такой сценарий в заявке
 	var count int64
 	r.db.Model(&ds.TripScenario{}).
@@ -37,16 +37,14 @@ func (r *Repository) AddScenarioToTrip(tripID, scenarioID uint, value float64) e
 
 	if count > 0 {
 		// Если сценарий уже есть, обновляем значение
-		return r.db.Model(&ds.TripScenario{}).
-			Where("trip_application_id = ? AND driving_scenario_id = ?", tripID, scenarioID).
-			Update("value", value).Error
+		return nil
 	}
 
 	// Если сценария нет, создаем новый
 	tripScenario := ds.TripScenario{
 		TripApplicationID: tripID,
 		DrivingScenarioID: scenarioID,
-		Value:             value,
+		Duration:          duration,
 	}
 	return r.db.Create(&tripScenario).Error
 }

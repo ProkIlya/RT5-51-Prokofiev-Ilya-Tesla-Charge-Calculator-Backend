@@ -67,6 +67,6 @@ INSERT INTO trip_applications (status, creator_id, start_charge, created_at) VAL
   ('черновик', 1, 100, CURRENT_TIMESTAMP);
 
 -- Заполнение связи заявок и условий
-INSERT INTO trip_scenarios (trip_application_id, driving_scenario_id, value) VALUES
-  (1, 1, 50),  -- 50 км по городу
-  (1, 2, 2);   -- 2 часа кондиционера
+INSERT INTO trip_scenarios (trip_application_id, driving_scenario_id, duration) VALUES
+  (1, 1, 50),
+  (1, 2, 2);

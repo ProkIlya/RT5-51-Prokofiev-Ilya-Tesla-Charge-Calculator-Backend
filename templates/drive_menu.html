@@ -15,12 +15,12 @@
 
     <div class="search-and-cart">
         <form method="GET" action="/" class="search-form">
-            <input type="text" name="search" placeholder="Поиск условий езды..." value="{{.SearchQuery}}" class="search-input">
+            <input type="text" name="scenario_search" placeholder="Поиск сценариев езды..." value="{{.SearchQuery}}" class="search-input">
             <button type="submit" class="search-button">Найти</button>
         </form>
         
         {{if .HasDraft}}
-        <div class="cart-icon" onclick="window.location.href='/trip/{{.CurrentTrip.ID}}'">
+        <div class="cart-icon" onclick="window.location.href='/trip/trip_{{.CurrentTrip.ID}}'">
             <span class="cart-count">{{.CartCount}}</span>
             <img src="http://localhost:9000/tesla-images/icon.png" alt="Корзина">
         </div>
@@ -54,7 +54,7 @@
             </div>
             <div class="scenario-actions">
                 <form method="POST" action="/scenario/{{.ID}}/add" class="add-form">
-                    <input type="hidden" name="value" value="">
+                    <input type="hidden" name="duration" value="">
                     <button type="submit" class="add-button">Добавить</button>
                 </form>
             </div>

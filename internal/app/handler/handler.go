@@ -20,8 +20,8 @@ func NewHandler(r *repository.Repository) *Handler {
 func (h *Handler) RegisterHandler(router *gin.Engine) {
 	router.GET("/", h.IndexHandler)
 	router.GET("/scenario/:id", h.ScenarioHandler)
-	router.GET("/trip/:id", h.TripHandler)
-	router.POST("/trip/:id/delete", h.DeleteTripHandler)
+	router.GET("/trip/trip_:id", h.TripHandler)               // Изменено
+	router.POST("/trip/trip_:id/delete", h.DeleteTripHandler) // Изменено
 	router.POST("/scenario/:id/add", h.AddScenarioToTripHandler)
 }
 

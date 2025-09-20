@@ -18,7 +18,7 @@ func CalculateRemainingCharge(trip *ds.TripApplication, tripScenarios []ds.TripS
 
 	for _, tripScenario := range tripScenarios {
 		scenario := tripScenario.DrivingScenario
-		value := tripScenario.Value
+		value := tripScenario.Duration
 
 		if scenario.Type == "дорога" {
 			// Расчет энергии на движение для дорожных условий

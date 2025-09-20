@@ -10,7 +10,7 @@ import (
 )
 
 func (h *Handler) IndexHandler(c *gin.Context) {
-	searchQuery := c.Query("search")
+	searchQuery := c.Query("scenario_search")
 	var scenarios []*ds.DrivingScenario
 	var err error
 
@@ -79,18 +79,17 @@ func (h *Handler) ScenarioHandler(c *gin.Context) {
 }
 
 func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
-
 	userID := uint(1)
 
 	// Получаю или создаю черновик заявки
-	trip, err := h.Repository.GetUserDraft(userID) // ORM запрос
+	trip, err := h.Repository.GetUserDraft(userID)
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return
 	}
 
 	if trip == nil {
-		trip, err = h.Repository.CreateDraft(userID) // ORM запрос
+		trip, err = h.Repository.CreateDraft(userID)
 		if err != nil {
 			h.errorHandler(c, http.StatusInternalServerError, err)
 			return
@@ -105,35 +104,23 @@ func (h *Handler) AddScenarioToTripHandler(c *gin.Context) {
 		return
 	}
 
-	// Получаю сценарий для определения типа
-	scenario, err := h.Repository.GetScenarioByID(uint(id)) // ORM запрос
-	if err != nil {
-		h.errorHandler(c, http.StatusInternalServerError, err)
-		return
-	}
+	// Получаю значение duration из формы
+	durationStr := c.PostForm("duration")
+	var duration float64
 
-	// Устанавливаю значение по умолчанию в зависимости от типа сценария
-	var defaultValue float64
-	if scenario.Type == "дорога" {
-		defaultValue = 50
+	if durationStr == "" {
+		// Если поле пустое, устанавливаем 0 (без значений по умолчанию)
+		duration = 0
 	} else {
-		defaultValue = 1
-	}
-
-	// Получаю значение из формы или используем значение по умолчанию
-	valueStr := c.PostForm("value")
-	if valueStr == "" {
-		valueStr = strconv.FormatFloat(defaultValue, 'f', -1, 64)
-	}
-
-	value, err := strconv.ParseFloat(valueStr, 64)
-	if err != nil {
-		h.errorHandler(c, http.StatusBadRequest, err)
-		return
+		duration, err = strconv.ParseFloat(durationStr, 64)
+		if err != nil {
+			h.errorHandler(c, http.StatusBadRequest, err)
+			return
+		}
 	}
 
 	// Добавляю сценарий в заявку
-	err = h.Repository.AddScenarioToTrip(trip.ID, uint(id), value) // ORM запрос
+	err = h.Repository.AddScenarioToTrip(trip.ID, uint(id), duration)
 	if err != nil {
 		h.errorHandler(c, http.StatusInternalServerError, err)
 		return
