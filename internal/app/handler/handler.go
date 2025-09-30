@@ -36,12 +36,12 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 		scenarios.PUT("/:id", h.UpdateScenarioAPI)
 		scenarios.DELETE("/:id", h.DeleteScenarioAPI)
 		scenarios.POST("/:id/add-to-trip", h.AddScenarioToTripAPI)
-		scenarios.POST("/:id/image", h.UploadScenarioImageAPI)
+		scenarios.POST("/:id/scenarioimage", h.UploadScenarioImageAPI)
 	}
 
 	trips := api.Group("/trips")
 	{
-		trips.GET("/cart", h.GetCartAPI)
+		trips.GET("/scenarioscart", h.GetScenariosCartAPI)
 		trips.GET("", h.GetTripsAPI)
 		//trips.POST("", h.CreateTripAPI)
 		trips.GET("/:trip_id", h.GetTripAPI)

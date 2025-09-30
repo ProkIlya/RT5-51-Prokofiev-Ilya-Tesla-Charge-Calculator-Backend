@@ -102,7 +102,7 @@ func (h *Handler) convert(ts []ds.TripScenario) []TripScenarioResponse {
 	return out
 }
 
-func (h *Handler) GetCartAPI(c *gin.Context) {
+func (h *Handler) GetScenariosCartAPI(c *gin.Context) {
 	user := GetCurrentUser()
 	draft, _ := h.Repository.GetUserDraft(user.ID)
 	if draft == nil {
