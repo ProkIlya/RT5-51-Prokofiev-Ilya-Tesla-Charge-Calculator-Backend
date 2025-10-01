@@ -46,8 +46,8 @@ func (h *Handler) RegisterHandler(router *gin.Engine) {
 		//trips.POST("", h.CreateTripAPI)
 		trips.GET("/:trip_id", h.GetTripAPI)
 		trips.PUT("/:trip_id", h.UpdateTripAPI)
-		trips.PUT("/:trip_id/submit", h.SubmitTripAPI)
-		trips.PUT("/:trip_id/review", h.ReviewTripAPI)
+		trips.PUT("/:trip_id/submittrip", h.SubmitTripAPI)
+		trips.PUT("/:trip_id/reviewtrip", h.ReviewTripAPI)
 		trips.DELETE("/:trip_id", h.DeleteTripAPI)
 
 		tripScenarios := trips.Group("/:trip_id/scenarios")

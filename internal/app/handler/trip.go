@@ -315,7 +315,7 @@ func (h *Handler) ReviewTripAPI(c *gin.Context) {
 		return
 	}
 
-	user := GetModeratorUser() // GetModeratorUser() или GetCurrentUser()
+	user := GetCurrentUser() // GetModeratorUser() или GetCurrentUser()
 	if !user.IsModerator || trip.Status != "сформирован" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "cannot review trip"})
 		return
