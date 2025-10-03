@@ -17,7 +17,11 @@ func (r *Repository) GetUserDraft(userID uint) (*ds.TripApplication, error) {
 }
 
 func (r *Repository) CreateDraft(userID uint) (*ds.TripApplication, error) {
-	t := ds.TripApplication{CreatorID: userID, Status: "черновик", StartCharge: 100}
+	t := ds.TripApplication{
+		CreatorID:   userID,
+		Status:      "черновик",
+		StartCharge: nil, // или можно установить значение по умолчанию, если нужно
+	}
 	err := r.db.Create(&t).Error
 	return &t, err
 }

@@ -47,9 +47,9 @@ type TripResponse struct {
 	Status          string                 `json:"status"`
 	CreatorLogin    string                 `json:"creator_login"`
 	ModeratorLogin  *string                `json:"moderator_login,omitempty"`
-	StartCharge     float64                `json:"start_charge"`
-	RemainingCharge *float64               `json:"remaining_charge,omitempty"`
-	CreatedAt       RussianTime            `json:"created_at"` // Изменено на RussianTime
+	StartCharge     *float64               `json:"start_charge"`
+	RemainingCharge *float64               `json:"remaining_charge"` // убрал omitempty
+	CreatedAt       RussianTime            `json:"created_at"`       // Изменено на RussianTime
 	SubmittedAt     *RussianTime           `json:"submitted_at,omitempty"`
 	CompletedAt     *RussianTime           `json:"completed_at,omitempty"`
 	Scenarios       []TripScenarioResponse `json:"scenarios,omitempty"`
@@ -57,7 +57,7 @@ type TripResponse struct {
 
 type TripScenarioResponse struct {
 	ScenarioID uint             `json:"scenario_id"`
-	Duration   float64          `json:"duration"`
+	Duration   *float64         `json:"duration"`
 	Scenario   ScenarioResponse `json:"scenario"`
 }
 
@@ -164,7 +164,7 @@ func (h *Handler) UpdateTripAPI(c *gin.Context) {
 		c.JSON(http.StatusForbidden, gin.H{"error": "access denied"})
 		return
 	}
-	trip.StartCharge = req.StartCharge
+	trip.StartCharge = &req.StartCharge
 	h.Repository.UpdateTrip(trip)
 	c.JSON(http.StatusOK, gin.H{"message": "updated"})
 }
@@ -315,7 +315,7 @@ func (h *Handler) ReviewTripAPI(c *gin.Context) {
 		return
 	}
 
-	user := GetCurrentUser() // GetModeratorUser() или GetCurrentUser()
+	user := GetModeratorUser() // GetModeratorUser() или GetCurrentUser()
 	if !user.IsModerator || trip.Status != "сформирован" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "cannot review trip"})
 		return
@@ -366,7 +366,7 @@ func (h *Handler) CreateTripAPI(c *gin.Context) {
 	trip := &ds.TripApplication{
 		CreatorID:   user.ID,
 		Status:      "черновик",
-		StartCharge: req.StartCharge,
+		StartCharge: &req.StartCharge,
 	}
 
 	if err := h.Repository.CreateTrip(trip); err != nil {

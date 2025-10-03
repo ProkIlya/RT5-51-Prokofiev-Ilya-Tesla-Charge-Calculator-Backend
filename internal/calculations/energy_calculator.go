@@ -14,11 +14,22 @@ func CalculateRemainingCharge(trip *ds.TripApplication, tripScenarios []ds.TripS
 		return 0 // Расчет только для завершенных заявок
 	}
 
+	// Проверяем что StartCharge не nil
+	if trip.StartCharge == nil {
+		return 0
+	}
+
 	totalEnergy := 0.0
 
 	for _, tripScenario := range tripScenarios {
 		scenario := tripScenario.DrivingScenario
-		value := tripScenario.Duration
+
+		// Проверяем что Duration не nil, иначе пропускаем
+		if tripScenario.Duration == nil {
+			continue
+		}
+
+		value := *tripScenario.Duration // Разыменовываем указатель
 
 		if scenario.Type == "дорога" {
 			// Расчет энергии на движение для дорожных условий
@@ -34,7 +45,7 @@ func CalculateRemainingCharge(trip *ds.TripApplication, tripScenarios []ds.TripS
 		}
 	}
 
-	remainingCharge := trip.StartCharge - totalEnergy
+	remainingCharge := *trip.StartCharge - totalEnergy // Разыменовываем указатель
 
 	if remainingCharge < 0 {
 		return 0

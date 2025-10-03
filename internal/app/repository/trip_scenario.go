@@ -12,7 +12,7 @@ func (r *Repository) AddScenarioToTrip(tripID, scID uint, dur float64) error {
 			Where("trip_application_id = ? AND driving_scenario_id = ?", tripID, scID).
 			Update("duration", dur).Error
 	}
-	ts := ds.TripScenario{TripApplicationID: tripID, DrivingScenarioID: scID, Duration: dur}
+	ts := ds.TripScenario{TripApplicationID: tripID, DrivingScenarioID: scID, Duration: &dur}
 	return r.db.Create(&ts).Error
 }
 
