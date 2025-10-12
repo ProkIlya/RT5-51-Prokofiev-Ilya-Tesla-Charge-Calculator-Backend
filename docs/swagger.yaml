@@ -1,0 +1,270 @@
+basePath: /
+definitions:
+  handler.ScenarioResponse:
+    properties:
+      aero_coeff:
+        type: number
+      description:
+        type: string
+      id:
+        type: integer
+      image_url:
+        type: string
+      name:
+        type: string
+      rolling_coeff:
+        type: number
+      speed:
+        type: number
+      status:
+        type: string
+      system_consumption:
+        type: number
+      type:
+        type: string
+    type: object
+  handler.TripResponse:
+    properties:
+      completed_at:
+        type: string
+      created_at:
+        description: Изменено на RussianTime
+        type: string
+      creator_login:
+        type: string
+      id:
+        type: integer
+      moderator_login:
+        type: string
+      remaining_charge:
+        description: убрал omitempty
+        type: number
+      scenarios:
+        items:
+          $ref: '#/definitions/handler.TripScenarioResponse'
+        type: array
+      start_charge:
+        type: number
+      status:
+        type: string
+      submitted_at:
+        type: string
+    type: object
+  handler.TripScenarioResponse:
+    properties:
+      duration:
+        type: number
+      scenario:
+        $ref: '#/definitions/handler.ScenarioResponse'
+      scenario_id:
+        type: integer
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@tesla-app.com
+    name: API Support
+    url: http://localhost:8080
+  description: API for Tesla driving scenarios and trip management
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+  title: Tesla App API
+  version: "1.0"
+paths:
+  /api/trips:
+    get:
+      consumes:
+      - application/json
+      description: Get trips with filtering. For moderators - all trips, for users
+        - only their trips
+      parameters:
+      - description: Status filter
+        in: query
+        name: status
+        type: string
+      - description: Start date (YYYY-MM-DD)
+        in: query
+        name: date_from
+        type: string
+      - description: End date (YYYY-MM-DD)
+        in: query
+        name: date_to
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/handler.TripResponse'
+            type: array
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get trips list
+      tags:
+      - Trips
+  /api/trips/{trip_id}/reviewtrip:
+    put:
+      consumes:
+      - application/json
+      description: Complete or reject trip (moderator only)
+      parameters:
+      - description: Trip ID
+        in: path
+        name: trip_id
+        required: true
+        type: integer
+      - description: Review action
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Review successful
+          schema:
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: object
+        "403":
+          description: Forbidden
+          schema:
+            type: object
+        "404":
+          description: Not found
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Review trip
+      tags:
+      - Trips
+  /api/users/login:
+    post:
+      consumes:
+      - application/json
+      description: Authenticate user and return JWT token
+      parameters:
+      - description: Login credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Login successful
+          schema:
+            type: object
+        "401":
+          description: Unauthorized
+          schema:
+            type: object
+      summary: User login
+      tags:
+      - Users
+  /api/users/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logout user and invalidate token
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Logout successful
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - Users
+  /api/users/profile:
+    get:
+      description: Get current user profile information
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User profile
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Get user profile
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update current user profile information
+      parameters:
+      - description: Profile update data
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Profile updated
+          schema:
+            type: object
+      security:
+      - BearerAuth: []
+      summary: Update user profile
+      tags:
+      - Users
+  /api/users/register:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user
+      parameters:
+      - description: User registration data
+        in: body
+        name: input
+        required: true
+        schema:
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: User created
+          schema:
+            type: object
+        "400":
+          description: Bad request
+          schema:
+            type: object
+      summary: User registration
+      tags:
+      - Users
+securityDefinitions:
+  BearerAuth:
+    description: JWT Authorization header using the Bearer scheme
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
