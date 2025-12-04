@@ -413,9 +413,6 @@ func (h *Handler) SubmitTripAPI(c *gin.Context) {
 		return
 	}
 
-	// Запускаем асинхронный расчет заряда в горутине
-	go h.sendToAsyncCalculator(trip.ID)
-
 	c.JSON(http.StatusOK, gin.H{"message": "trip submitted"})
 }
 
@@ -520,7 +517,7 @@ func (h *Handler) ReviewTripAPI(c *gin.Context) {
 
 	if req.Action == "complete" {
 		trip.Status = "завершён"
-		// Расчет заряда теперь выполняется асинхронно, не делаем здесь
+		go h.sendToAsyncCalculator(trip.ID) // Запускаем асинхронный расчет заряда
 	} else if req.Action == "reject" {
 		trip.Status = "отклонён"
 	}
