@@ -1,0 +1,24 @@
+/bin/
+/tesla-app
+
+# Исключаем файлы IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Исключаем кэш Go
+/go/pkg/
+/go/bin/
+
+# Исключаем временные файлы
+/tmp/
+
+# Исключаем логи
+*.log
+
+# Исключаем environment variables 
+.env
+/backend/.env
+configure-minio.sh
+/frontend/dev-dist

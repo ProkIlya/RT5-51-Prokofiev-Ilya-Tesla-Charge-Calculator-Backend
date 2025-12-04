@@ -1,0 +1,6 @@
+ServiceHost = "0.0.0.0"
+ServicePort = 8080
+JWTSecret = "super_secret_jwt_key"
+JWTExpiresHours = 24
+RedisHost = "redis"
+RedisPort = 6379

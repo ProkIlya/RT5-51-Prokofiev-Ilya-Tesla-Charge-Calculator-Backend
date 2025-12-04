@@ -1,0 +1,107 @@
+version: '3.8'
+
+services:
+  backend-http:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+      - minio
+      - redis
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=tesla_db
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=ilia07102005
+      - MINIO_ENDPOINT=minio:9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=tesla-images
+      - SERVICE_PORT=8080
+      - JWT_SECRET=super_secret_jwt_key
+      - JWT_EXPIRES_HOURS=24
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - ASYNC_SERVER_URL=http://async-server:8000/api/calculate_charge/
+      - ASYNC_SERVER_TOKEN=secret_calculator_token_2025
+
+
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_DB: tesla_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ilia07102005
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/build/fill.sql:/docker-entrypoint-initdb.d/fill.sql
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "8081:8080"
+    depends_on:
+      - postgres
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server --console-address ":9001" /data
+    volumes:
+      - minio_data:/data
+
+  configure-minio:
+    image: minio/mc
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      sleep 10;
+      mc alias set myminio http://minio:9000 minioadmin minioadmin;
+      mc mb myminio/tesla-images || true;
+      mc anonymous set download myminio/tesla-images;
+      mc policy set public myminio/tesla-images;
+      exit 0;
+      "
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --save 20 1 --loglevel warning
+    volumes:
+      - redis_data:/data
+  
+  async-server:
+    build: ./async-server
+    ports:
+      - "8000:8000"
+    environment:
+      - DJANGO_SETTINGS_MODULE=charge_calculator.settings
+      - BACKEND_URL=http://backend-http:8080
+      - BACKEND_TOKEN=secret_calculator_token_2025
+      - PYTHONUNBUFFERED=1
+    volumes:
+      - ./async-server:/app
+    depends_on:
+      - backend-http
+    command: >
+      sh -c "sleep 15 && 
+             python manage.py migrate --noinput && 
+             python manage.py runserver 0.0.0.0:8000"
+
+
+volumes:
+  postgres_data:
+  minio_data:
+  redis_data:
